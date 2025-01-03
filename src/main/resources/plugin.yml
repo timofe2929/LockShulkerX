@@ -1,0 +1,20 @@
+name: LockShulker
+version: 1.0
+main: org.lockshulker.LockShulker
+author: TILock
+description: Плагин на шалкера как на FunTime, HolyWorld-Lite
+websites: https://discord.gg/yQ58jzNyZ6
+api-version: 1.16
+
+commands:
+  lockshulker:
+    description: Основная команда для LockShulker.
+    usage: /lockshulker <reload/give [игрок] shulker [уровень]>
+    aliases: [ls]
+    permission: lockshulker.admin
+
+permissions:
+  lockshulker.admin:
+    description: Позволяет выполнять команды управления плагином.
+    default: op
+
