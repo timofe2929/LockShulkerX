@@ -41,7 +41,6 @@ public class ShulkerOpenListener implements Listener {
         long currentTime = System.currentTimeMillis();
         long lastTimeOpened = lastOpenTime.getOrDefault(playerId, 0L);
 
-        // Проверка на задержку открытия шалкера
         if ((currentTime - lastTimeOpened) < delay * 1000) {
             player.sendMessage("§cПодождите " + (delay - (currentTime - lastTimeOpened) / 1000) + " секунд перед повторным открытием.");
             event.setCancelled(true);
@@ -53,7 +52,6 @@ public class ShulkerOpenListener implements Listener {
         ItemStack shulkerItem = null;
         boolean isOffHand = false;
 
-        // Проверяем, есть ли шалкер в руках
         if (mainHandItem != null && mainHandItem.getType().name().contains("SHULKER_BOX")) {
             shulkerItem = mainHandItem;
         } else if (offHandItem != null && offHandItem.getType().name().contains("SHULKER_BOX")) {
@@ -62,50 +60,42 @@ public class ShulkerOpenListener implements Listener {
         }
 
         if (shulkerItem == null) {
-            return; // Нет шалкера в руках
+            return;
         }
 
-        // Проверка прав на открытие шалкера в воздухе
         boolean requirePermission = plugin.getConfig().getBoolean("settings.require-permission-to-open-air", true);
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            event.setCancelled(true); // Закрываем событие, если это клик по воздуху или блоку
+            event.setCancelled(true);
 
-            // Если нужно, проверяем разрешения для открытия в воздухе
             if (requirePermission && !player.hasPermission("lockshulker.open.air")) {
                 player.sendMessage("§cУ вас нет прав для открытия шалкера в воздухе.");
                 return;
             }
 
-            // Работаем с инвентарем шалкера
             BlockStateMeta shulkerMeta = (BlockStateMeta) shulkerItem.getItemMeta();
             ShulkerBox shulkerBox = (ShulkerBox) shulkerMeta.getBlockState();
             ItemStack[] shulkerContents = shulkerBox.getInventory().getContents();
 
-            // Открываем инвентарь шалкера
             Inventory shulkerInventory = Bukkit.createInventory(player, 27, "Shulker Box");
             shulkerInventory.setContents(shulkerContents);
             player.openInventory(shulkerInventory);
 
-            // Сохраняем данные для повторного открытия
             openShulkers.put(playerId, shulkerItem);
             shulkerInitialContents.put(playerId, shulkerContents.clone());
             lastOpenTime.put(playerId, currentTime);
 
-            // Создаем барьер для блокировки инвентаря
             ItemStack barrier = new ItemStack(Material.matchMaterial(plugin.getConfig().getString("settings.shulker-barrier-material")));
             ItemMeta meta = barrier.getItemMeta();
             meta.setDisplayName(plugin.getConfig().getString("settings.shulker-barrier-name").replace("&", "§"));
             meta.getPersistentDataContainer().set(LockShulker.BARRIER_KEY, PersistentDataType.STRING, "lockshulker_barrier");
             barrier.setItemMeta(meta);
 
-            // Выставляем барьер в инвентарь
             if (isOffHand) {
                 player.getInventory().setItemInOffHand(barrier);
             } else {
                 player.getInventory().setItemInMainHand(barrier);
             }
 
-            // Воспроизводим звук
             player.playSound(player.getLocation(), plugin.getConfig().getString("settings.shulker-open-sound"), 1.0f, 1.0f);
         }
     }

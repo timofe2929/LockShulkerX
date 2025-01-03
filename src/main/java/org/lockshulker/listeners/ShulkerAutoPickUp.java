@@ -25,7 +25,6 @@ public class ShulkerAutoPickUp implements Listener {
         FileConfiguration config = plugin.getConfig();
         allowedItems = config.getStringList("settings.items-pickup");
 
-        // Загружаем настройки звука
         String soundName = config.getString("settings.pickup-sound.name", "ENTITY_ITEM_PICKUP");
         pickupSound = Sound.valueOf(soundName.toUpperCase());
         volume = (float) config.getDouble("settings.pickup-sound.volume", 1.0);

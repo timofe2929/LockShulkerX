@@ -107,7 +107,6 @@ public class ShulkerLimitListener implements Listener {
 
         int shulkerCount = countShulkerBoxes(contents);
 
-        // Собираем лишние шалкеры
         if (shulkerCount > maxShulkerBoxes) {
             int excess = shulkerCount - maxShulkerBoxes;
             for (ItemStack item : contents) {
